@@ -48,6 +48,7 @@ public class OSCPortInBuilder {
 
 		if (parserBuilder == null) {
 			parserBuilder = new OSCSerializerAndParserBuilder();
+			parserBuilder.setNetworkProtocol(networkProtocol);
 		}
 
 		if (packetListeners == null) {
