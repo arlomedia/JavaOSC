@@ -30,6 +30,7 @@ public class OSCPortOutBuilder {
 
 		if (serializerBuilder == null) {
 			serializerBuilder = new OSCSerializerAndParserBuilder();
+			serializerBuilder.setNetworkProtocol(networkProtocol);
 		}
 
 		return new OSCPortOut(
