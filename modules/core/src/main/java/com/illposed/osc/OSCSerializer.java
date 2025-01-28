@@ -246,6 +246,28 @@ public class OSCSerializer {
 	private void write(final OSCMessage message) throws OSCSerializeException {
 		writeAddress(message);
 		writeArguments(message);
+		if (properties.get("networkProtocol") == NetworkProtocol.TCP) {
+			writePLH();
+		}
+	}
+
+	/**
+	 * Serializes a packet length header. Call this after writing the message and arguments.
+	 * @throws OSCSerializeException if the message failed to serialize
+	 */
+	private void writePLH() throws OSCSerializeException {
+		byte[] rawOutput = output.toByteArray();
+		int length = rawOutput.length;
+		byte[] newOutput = new byte[4 + length];
+		ByteBuffer.wrap(newOutput).putInt(length); // add the length
+		ByteBuffer.wrap(newOutput, 4, length).put(rawOutput); // add the message content
+
+		output.clear();
+		output.put(newOutput);
+
+		if (false) { // what to check here?
+			throw new OSCSerializeException("Error adding packet length header");
+		}
 	}
 
 	/**
