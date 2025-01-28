@@ -29,6 +29,10 @@ public class OSCSerializerAndParserBuilder {
 		this.usingDefaultHandlers = true;
 	}
 
+	public void setNetworkProtocol(NetworkProtocol networkProtocol) {
+		this.properties.put("networkProtocol", networkProtocol);
+	}
+
 	// Public API
 	@SuppressWarnings("WeakerAccess")
 	public Map<Character, ArgumentHandler> getIdentifierToTypeMapping() {
