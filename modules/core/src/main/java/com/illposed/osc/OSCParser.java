@@ -9,6 +9,8 @@ import com.illposed.osc.argument.OSCTimeTag64;
 import com.illposed.osc.argument.ArgumentHandler;
 import com.illposed.osc.argument.handler.IntegerArgumentHandler;
 import com.illposed.osc.argument.handler.TimeTag64ArgumentHandler;
+import com.illposed.osc.transport.NetworkProtocol;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.nio.Buffer;
@@ -223,7 +225,20 @@ public class OSCParser {
 	 * Assumes that the byte array is a message.
 	 * @return a message containing the data specified in the byte stream
 	 */
-	private OSCMessage convertMessage(final ByteBuffer rawInput) throws OSCParseException {
+	private OSCMessage convertMessage(final ByteBuffer rawInputWithLength) throws OSCParseException {
+
+		// remove the first four bytes, which is the frame length
+		// ideally we would use this to collect data from multiple incoming TCP packets, but for this will at least allow parsing to work for single packets
+		// we should only do this with TCP connections
+		ByteBuffer rawInput = null;
+		if ((properties.get("networkProtocol") == NetworkProtocol.TCP)&&(rawInputWithLength.limit() > 4)) {
+			rawInput = ByteBuffer.allocate(rawInputWithLength.limit() - 4);
+			for(int i = 4; i < rawInputWithLength.limit(); i++) {
+				rawInput.put(i - 4, rawInputWithLength.get(i));
+			}
+		} else {
+			rawInput = rawInputWithLength;
+		}
 
 		final String address = readString(rawInput);
 		final CharSequence typeIdentifiers = readTypes(rawInput);
